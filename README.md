@@ -6,12 +6,12 @@ API backend completa para gerenciamento de doações, pontos de coleta e necessi
 
 # 📌 Visão Geral
 
-O **SDEBR** é um sistema que conecta:
+O **SDEBR** conecta:
 
-- Pessoas que querem doar
-- Pontos de coleta que precisam de recursos
+* Pessoas que querem doar 🤝
+* Pontos de coleta que precisam de recursos 📦
 
-Permitindo transparência, organização e eficiência nas doações.
+Permitindo **transparência, organização e eficiência nas doações**.
 
 ---
 
@@ -19,91 +19,103 @@ Permitindo transparência, organização e eficiência nas doações.
 
 Evita:
 
-❌ Doações desnecessárias  
-❌ Desorganização  
-❌ Falta de informação  
-❌ Desperdício  
+❌ Doações desnecessárias
+❌ Falta de organização
+❌ Falta de informação
+❌ Desperdício
 
 ---
 
 # 🧠 Como funciona
 
-1. Usuário se cadastra  
-2. Pode solicitar ser ponto de coleta  
-3. Admin aprova  
-4. Ponto cadastra necessidades  
-5. Usuários realizam doações  
-6. Sistema atualiza progresso automaticamente  
+1. Usuário se cadastra
+2. Pode solicitar ser ponto de coleta
+3. Admin aprova
+4. Ponto cadastra necessidades
+5. Usuários realizam doações
+6. Sistema atualiza progresso automaticamente (%)
 
 ---
 
 # 🛠️ Tecnologias Utilizadas
 
 ## 🔹 Backend
-- Node.js → runtime JavaScript  
-- Express → framework HTTP  
+
+* Node.js
+* Express
 
 ## 🔹 Banco
-- SQLite → banco leve e rápido  
+
+* SQLite
 
 ## 🔹 Autenticação
-- jsonwebtoken (JWT)  
+
+* JWT (jsonwebtoken)
 
 ## 🔹 Segurança
-- bcrypt → hash de senha  
-- cors → controle de acesso web  
-- helmet → proteção de headers HTTP  
-- express-rate-limit → anti-spam  
+
+* bcrypt → criptografia de senha
+* cors → controle de acesso
+* helmet → proteção HTTP
+* express-rate-limit → anti-spam
+* IP Blocker → bloqueio automático de IP
+* Cleanup automático de IPs
 
 ## 🔹 Validação
-- zod → validação de dados  
+
+* Zod
 
 ---
 
 # 🔐 Segurança Implementada
 
-- Autenticação JWT  
-- Controle de roles (admin, ponto, user)  
-- Senhas criptografadas  
-- Rate limit global  
-- Rate limit em doações  
-- Bloqueio automático de IP  
-- Expiração automática de IP bloqueado  
-- Validação de dados  
-- CORS controlado  
-- Helmet (segurança HTTP)  
-- Controle de ownership (usuário só acessa seus dados)  
+* 🔑 Autenticação com JWT
+* 🧠 Controle de roles (admin, ponto, user)
+* 🔒 Senhas criptografadas com bcrypt
+* 🚫 Rate limit global
+* ⚡ Rate limit em doações
+* 🛑 Bloqueio automático de IP suspeito
+* ⏳ Expiração automática de IP bloqueado
+* 🌐 CORS configurado
+* 🛡️ Helmet (headers seguros)
+* 👤 Controle de ownership (usuário só altera o que é dele)
 
 ---
 
 # 👤 Tipos de Usuário
 
-| Tipo   | Permissões |
-|--------|-----------|
-| user   | Doar |
-| ponto  | Criar necessidades |
-| admin  | Controle total |
+| Tipo  | Permissões                   |
+| ----- | ---------------------------- |
+| user  | Doar                         |
+| ponto | Criar/gerenciar necessidades |
+| admin | Controle total               |
 
 ---
 
 # 📦 Estrutura do Projeto
 
 ```
+# 📦 Estrutura do Projeto
+
+```
+```bash
 SDEBR-api/
 ├── src/
-│   ├── config/
-│   ├── controllers/
-│   ├── database/
-│   ├── middleware/
-│   ├── routes/
-│   ├── utils/
-│   ├── validators/
-│   └── app.js
+│   ├── config/        # ⚙️ Configurações globais (JWT, CORS, Logger)
+│   ├── controllers/   # 🎯 Regras de negócio (auth, doações, pontos, necessidades, admin)
+│   ├── database/      # 🗄️ Conexão e inicialização do banco SQLite
+│   ├── middleware/    # 🔐 Segurança (auth, roles, rate limit, ip blocker)
+│   ├── routes/        # 🌐 Definição das rotas da API
+│   ├── utils/         # 🧹 Funções auxiliares (ex: limpeza de IPs bloqueados)
+│   ├── validators/    # ✅ Validação de dados (Zod)
+│   └── app.js         # 🚀 Configuração principal do Express
 │
-├── database.sqlite
-├── server.js
-├── package.json
-├── README.md
+├── database.sqlite    # 🗄️ Banco de dados local (não sobe pro Git)
+├── server.js          # 🔌 Inicialização do servidor
+├── package.json       # 📦 Dependências do projeto
+├── README.md          # 📖 Documentação
+```
+
 ```
 
 ---
@@ -111,6 +123,7 @@ SDEBR-api/
 # 🗄️ Banco de Dados (SQLite)
 
 ## 📌 usuarios
+
 ```sql
 id INTEGER PRIMARY KEY AUTOINCREMENT,
 nome TEXT NOT NULL,
@@ -122,6 +135,7 @@ created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 ```
 
 ## 📌 pontos
+
 ```sql
 id INTEGER PRIMARY KEY AUTOINCREMENT,
 nome TEXT NOT NULL,
@@ -134,12 +148,11 @@ cep TEXT,
 complemento TEXT,
 descricao TEXT,
 user_id INTEGER,
-created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-
-FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
+created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 ```
 
 ## 📌 necessidades
+
 ```sql
 id INTEGER PRIMARY KEY AUTOINCREMENT,
 ponto_id INTEGER,
@@ -149,23 +162,21 @@ quantidade_restante INTEGER,
 porcentagem INTEGER,
 urgencia TEXT,
 status TEXT,
-updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-
-FOREIGN KEY (ponto_id) REFERENCES pontos(id) ON DELETE CASCADE
+updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 ```
 
 ## 📌 doacoes
+
 ```sql
 id INTEGER PRIMARY KEY AUTOINCREMENT,
 ponto_id INTEGER,
 tipo TEXT NOT NULL,
 quantidade INTEGER NOT NULL,
-data DATETIME DEFAULT CURRENT_TIMESTAMP,
-
-FOREIGN KEY (ponto_id) REFERENCES pontos(id) ON DELETE CASCADE
+data DATETIME DEFAULT CURRENT_TIMESTAMP
 ```
 
 ## 📌 ips_bloqueados
+
 ```sql
 id INTEGER PRIMARY KEY AUTOINCREMENT,
 ip TEXT NOT NULL,
@@ -178,58 +189,62 @@ expires_at DATETIME NOT NULL
 # 📡 Rotas da API
 
 ## 🔐 Auth
-- POST /api/register  
-- POST /api/login  
+
+* POST /api/register
+* POST /api/login
 
 ## 📍 Pontos
-- GET /api/pontos  
-- POST /api/pontos  
-- PUT /api/pontos/:id  
-- DELETE /api/pontos/:id  
+
+* GET /api/pontos
+* POST /api/pontos
+* PUT /api/pontos/:id
+* DELETE /api/pontos/:id
 
 ## 📦 Necessidades
-- GET /api/necessidades  
-- POST /api/necessidades  
-- PATCH /api/necessidades/:id  
-- DELETE /api/necessidades/:id  
+
+* GET /api/necessidades
+* POST /api/necessidades
+* PATCH /api/necessidades/:id
+* DELETE /api/necessidades/:id
 
 ## 🤝 Doações
-- GET /api/doacoes  
-- POST /api/doacoes  
-- DELETE /api/doacoes/:id  
+
+* GET /api/doacoes
+* POST /api/doacoes
+* DELETE /api/doacoes/:id
 
 ## 👑 Admin
-- GET /api/admin/ips  
-- DELETE /api/admin/ip/:ip  
-- GET /api/admin/solicitacoes  
-- PATCH /api/admin/aprovar/:id  
-- PATCH /api/admin/rejeitar/:id  
+
+* GET /api/admin/ips
+* DELETE /api/admin/ip/:ip
+* GET /api/admin/solicitacoes
+* PATCH /api/admin/aprovar/:id
+* PATCH /api/admin/rejeitar/:id
+
+---
+
+# 📊 Lógica Inteligente do Sistema
+
+✔ Atualização automática de necessidades
+✔ Cálculo de quantidade restante
+✔ Atualização de status (precisando / ok)
+✔ Cálculo de porcentagem de progresso
 
 ---
 
 # 🚀 Como Rodar o Projeto
 
-## 1. Clonar repositório
-```
-git clone SEU_REPO
-```
-
-## 2. Entrar na pasta
-```
-cd SDEBR-api
-```
-
-## 3. Instalar dependências
-```
+```bash
+git clone https://github.com/Wesleybarroso/sdebr-api.git
+cd sdebr-api
 npm install
-```
-
-## 4. Rodar servidor
-```
 npm run dev
 ```
 
-## 5. Acessar
+---
+
+# 🌐 Acessar API
+
 ```
 http://localhost:3000
 http://localhost:3000/api
@@ -239,10 +254,10 @@ http://localhost:3000/api
 
 # 🔐 Variáveis de Ambiente
 
-Crie um arquivo `.env`:
+Crie `.env`:
 
 ```
-JWT_SECRET=sua_chave_secreta
+JWT_SECRET=sua_chave_super_secreta
 PORT=3000
 ```
 
@@ -251,21 +266,22 @@ PORT=3000
 # 🌐 Deploy
 
 ## 🔥 Render
-- Conectar GitHub  
-- Build: npm install  
-- Start: npm start  
+
+* Conectar GitHub
+* Build: `npm install`
+* Start: `npm start`
 
 ## ☁️ AWS (EC2)
-- Instalar Node.js  
-- Clonar projeto  
-- npm install  
-- node server.js  
+
+* Instalar Node
+* Clonar projeto
+* npm install
+* node server.js
 
 ## 🖥️ VPS
-- Instalar Node.js  
-- npm install  
-- usar PM2:
+
 ```
+npm install
 pm2 start server.js
 ```
 
@@ -273,11 +289,11 @@ pm2 start server.js
 
 # 📊 Diferenciais
 
-- Sistema com progresso de doação (%)  
-- Urgência automática  
-- Segurança avançada  
-- Anti-spam com bloqueio de IP  
-- Estrutura pronta para produção  
+* Sistema com progresso de doação (%)
+* Controle de urgência
+* Segurança avançada
+* Anti-spam com bloqueio automático
+* Estrutura pronta para produção
 
 ---
 
